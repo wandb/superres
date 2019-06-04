@@ -1,0 +1,4 @@
+pillow>=5.0.0
+tensorflow>=1.13.1
+wandb>=0.8.0
+numpy>=1.16.0
