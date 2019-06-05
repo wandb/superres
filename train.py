@@ -11,7 +11,6 @@ from tensorflow.keras.preprocessing.image import img_to_array
 import wandb
 from wandb.keras import WandbCallback
 
-os.environ["WANDB_MODE"] = "dryrun"
 run = wandb.init(project='superres')
 config = run.config
 
