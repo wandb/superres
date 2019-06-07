@@ -14,21 +14,21 @@ from wandb.keras import WandbCallback
 run = wandb.init(project='superres')
 config = run.config
 
-config.num_epochs = 1000
+config.num_epochs = 50
 config.batch_size = 32
 config.input_height = 32
 config.input_width = 32
 config.output_height = 256
 config.output_width = 256
 
-val_dir = 'test'
-train_dir = 'train'
+val_dir = 'data/test'
+train_dir = 'data/train'
 
 # automatically get the data if it doesn't exist
-if not os.path.exists("train"):
+if not os.path.exists("data"):
     print("Downloading flower dataset...")
     subprocess.check_output(
-        "curl https://storage.googleapis.com/wandb/flower-enhance.tar.gz | tar xz", shell=True)
+        "mkdir data && curl https://storage.googleapis.com/wandb/flower-enhance.tar.gz | tar xz -C data", shell=True)
 
 config.steps_per_epoch = len(
     glob.glob(train_dir + "/*-in.jpg")) // config.batch_size
@@ -68,19 +68,22 @@ def perceptual_distance(y_true, y_pred):
 
     return K.mean(K.sqrt((((512+rmean)*r*r)/256) + 4*g*g + (((767-rmean)*b*b)/256)))
 
+
 val_generator = image_generator(config.batch_size, val_dir)
 in_sample_images, out_sample_images = next(val_generator)
+
 
 class ImageLogger(Callback):
     def on_epoch_end(self, epoch, logs):
         preds = self.model.predict(in_sample_images)
         in_resized = []
         for arr in in_sample_images:
-            #Simple upsampling
+            # Simple upsampling
             in_resized.append(arr.repeat(8, axis=0).repeat(8, axis=1))
         wandb.log({
             "examples": [wandb.Image(np.concatenate([in_resized[i] * 255, o * 255, out_sample_images[i] * 255], axis=1)) for i, o in enumerate(preds)]
         }, commit=False)
+
 
 model = Sequential()
 model.add(layers.Conv2D(3, (3, 3), activation='relu', padding='same',
