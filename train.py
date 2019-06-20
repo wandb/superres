@@ -40,12 +40,12 @@ def image_generator(batch_size, img_dir):
     """A generator that returns small images and large images.  DO NOT ALTER the validation set"""
     input_filenames = glob.glob(img_dir + "/*-in.jpg")
     counter = 0
+    random.shuffle(input_filenames)
     while True:
         small_images = np.zeros(
             (batch_size, config.input_width, config.input_height, 3))
         large_images = np.zeros(
             (batch_size, config.output_width, config.output_height, 3))
-        random.shuffle(input_filenames)
         if counter+batch_size >= len(input_filenames):
             counter = 0
         for i in range(batch_size):
