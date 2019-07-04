@@ -28,7 +28,7 @@ train_dir = 'data/train'
 if not os.path.exists("data"):
     print("Downloading flower dataset...")
     subprocess.check_output(
-        "mkdir data && curl https://storage.googleapis.com/wandb/flower-enhance.tar.gz | tar xz -C data", shell=True)
+        "mkdir data && curl https://storage.googleapis.com/wandb/flower-enhance.tar.gz | tar xzf - -C data", shell=True)
 
 config.steps_per_epoch = len(
     glob.glob(train_dir + "/*-in.jpg")) // config.batch_size
